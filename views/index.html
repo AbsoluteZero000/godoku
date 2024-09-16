@@ -1,12 +1,12 @@
-{{ block "index" . }}
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>first html template</title>
-        <link rel="stylesheet" href="css/index.css">
+        <title>First HTML Template</title>
+        <link rel="stylesheet" href="/css/index.css">
         <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
     </head>
     <body>
-        Hello World!
+        <h1>{{ .message }}</h1>
     </body>
 </html>
+

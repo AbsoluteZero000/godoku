@@ -30,7 +30,9 @@ func main() {
 	e.Renderer = newTemplate()
 
 	e.GET("/", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "index", "Hello world!")
+		return c.Render(http.StatusOK, "index.html", map[string]interface{}{
+			"message": "Hello World!",
+		})
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))
