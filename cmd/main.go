@@ -55,7 +55,7 @@ func main() {
 				sudokuBoard[row][col] = value
 			}
 		}
-		return c.Render(http.StatusOK, "index.html", sudokuBoard)
+		return c.Render(http.StatusOK, "board.html", sudokuBoard)
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))

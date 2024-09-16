@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sudoku Game</title>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -56,33 +57,9 @@
 
 <body>
     <h1>Sudoku Game</h1>
-    <table class="sudoku-board">
-        {{range $rowIndex, $row := .}}
-        <tr class="sudoku-row">
-            {{range $colIndex, $cell := $row}}
-            <td class="sudoku-cell">
-                <input type="number" min="1" max="9" value="{{if ne $cell 0}}{{$cell}}{{end}}"
-                    onchange="updateCell({{$rowIndex}}, {{$colIndex}}, this.value)">
-            </td>
-            {{end}}
-        </tr>
-        {{end}}
-    </table>
-
-    <script>
-        function updateCell(row, col, value) {
-            fetch('/update', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `row=${row}&col=${col}&value=${value}`
-            }).then(response => response.text())
-                .then(html => {
-                    document.body.innerHTML = html;
-                });
-        }
-    </script>
+    <div id="board-container" hx-target="this" hx-swap="outerHTML">
+        {{template "board.html" .}}
+    </div>
 </body>
 
 </html>

@@ -1,0 +1,12 @@
+<table class="sudoku-board">
+    {{range $rowIndex, $row := .}}
+    <tr class="sudoku-row">
+        {{range $colIndex, $cell := $row}}
+        <td class="sudoku-cell">
+            <input type="number" min="1" max="9" value="{{if ne $cell 0}}{{$cell}}{{end}}" hx-post="/update"
+                hx-vals='{"row": {{$rowIndex}}, "col": {{$colIndex}}, "value": this.value}' hx-trigger="change">
+        </td>
+        {{end}}
+    </tr>
+    {{end}}
+</table>
