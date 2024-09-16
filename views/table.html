@@ -1,32 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sudoku Game</title>
+    <title>Sudoku Board</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
         }
-
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
         .sudoku-board {
             border: 2px solid #333;
             border-collapse: collapse;
         }
-
         .sudoku-cell {
             width: 40px;
             height: 40px;
@@ -34,7 +25,6 @@
             font-size: 20px;
             border: 1px solid #999;
         }
-
         .sudoku-cell input {
             width: 100%;
             height: 100%;
@@ -43,26 +33,22 @@
             font-size: 20px;
             background-color: transparent;
         }
-
         .sudoku-cell:nth-child(3n) {
             border-right: 2px solid #333;
         }
-
         .sudoku-row:nth-child(3n) td {
             border-bottom: 2px solid #333;
         }
     </style>
 </head>
-
 <body>
-    <h1>Sudoku Game</h1>
     <table class="sudoku-board">
         {{range $rowIndex, $row := .}}
         <tr class="sudoku-row">
             {{range $colIndex, $cell := $row}}
             <td class="sudoku-cell">
                 <input type="number" min="1" max="9" value="{{if ne $cell 0}}{{$cell}}{{end}}"
-                    onchange="updateCell({{$rowIndex}}, {{$colIndex}}, this.value)">
+                       onchange="updateCell({{$rowIndex}}, {{$colIndex}}, this.value)">
             </td>
             {{end}}
         </tr>
@@ -78,11 +64,10 @@
                 },
                 body: `row=${row}&col=${col}&value=${value}`
             }).then(response => response.text())
-                .then(html => {
-                    document.body.innerHTML = html;
-                });
+              .then(html => {
+                  document.body.innerHTML = html;
+              });
         }
     </script>
 </body>
-
 </html>
