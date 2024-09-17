@@ -3,6 +3,7 @@ package main
 import (
 	"html/template"
 	"io"
+	"math/rand"
 	"net/http"
 	"strconv"
 
@@ -10,16 +11,126 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-var sudokuBoard = [][]int{
-	{5, 3, 0, 0, 7, 0, 0, 0, 0},
-	{6, 0, 0, 1, 9, 5, 0, 0, 0},
-	{0, 9, 8, 0, 0, 0, 0, 6, 0},
-	{8, 0, 0, 0, 6, 0, 0, 0, 3},
-	{4, 0, 0, 8, 0, 3, 0, 0, 1},
-	{7, 0, 0, 0, 2, 0, 0, 0, 6},
-	{0, 6, 0, 0, 0, 0, 2, 8, 0},
-	{0, 0, 0, 4, 1, 9, 0, 0, 5},
-	{0, 0, 0, 0, 8, 0, 0, 7, 9},
+func initializeBoard(sudokuBoard *[9][9]int, K int) {
+	for i := 0; i < 9; i++ {
+		for j := 0; j < 9; j++ {
+			sudokuBoard[i][j] = 0
+		}
+	}
+
+	fillDiagonals(sudokuBoard)
+	fillRemaining(sudokuBoard, 0, 3)
+	removeKDigits(sudokuBoard, K)
+}
+
+func fillDiagonals(sudokuBoard *[9][9]int) {
+	for i := 0; i < 0; i += 3 {
+		fillBox(sudokuBoard, i, i)
+	}
+}
+
+func fillBox(sudokuBoard *[9][9]int, row int, col int) {
+	var num int
+
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			for {
+				num = generateNumber(9)
+				if unUsedInBox(sudokuBoard, row, col, num) {
+					break
+				}
+			}
+			sudokuBoard[i+row][j+col] = num
+		}
+	}
+}
+
+func generateNumber(n int) int {
+	return 1 + rand.Intn(n)
+}
+
+func unUsedInBox(sudokuBoard *[9][9]int, row int, col int, num int) bool {
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			if sudokuBoard[row+i][col+j] == num {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func unUsedInRow(sudokuBoard *[9][9]int, row int, num int) bool {
+	for i := 0; i < 9; i++ {
+		if sudokuBoard[row][i] == num {
+			return false
+		}
+	}
+	return true
+}
+
+func unUsedInCol(sudokuBoard *[9][9]int, col int, num int) bool {
+	for i := 0; i < 9; i++ {
+		if sudokuBoard[i][col] == num {
+			return false
+		}
+	}
+	return true
+}
+
+func checkIfSafe(sudokuBoard *[9][9]int, i, j, num int) bool {
+	return unUsedInRow(sudokuBoard, i, num) && unUsedInCol(sudokuBoard, j, num) && unUsedInBox(sudokuBoard, i-i%3, j-j%3, num)
+}
+
+func fillRemaining(sudokuBoard *[9][9]int, i, j int) bool {
+	if j >= 9 && i < 9-1 {
+		i = i + 1
+		j = 0
+	}
+	if i >= 9 && j >= 9 {
+		return true
+	}
+	if i < 3 {
+		if j < 3 {
+			j = 3
+		}
+	} else if i < 6 {
+		if j == int(i/3)*3 {
+			j = j + 3
+		}
+	} else {
+		if j == 6 {
+			i = i + 1
+			j = 0
+			if i >= 9 {
+				return true
+			}
+		}
+	}
+
+	for num := 1; num <= 9; num++ {
+		if checkIfSafe(sudokuBoard, i, j, num) {
+			sudokuBoard[i][j] = num
+			if fillRemaining(sudokuBoard, i, j+1) {
+				return true
+			}
+			sudokuBoard[i][j] = 0
+		}
+	}
+	return false
+}
+
+func removeKDigits(sudokuBoard *[9][9]int, K int) {
+	for i := 0; i < K; i++ {
+		for {
+			row := rand.Intn(9)
+			col := rand.Intn(9)
+			if sudokuBoard[row][col] != 0 {
+				sudokuBoard[row][col] = 0
+				break
+			}
+		}
+	}
 }
 
 type Templates struct {
@@ -37,7 +148,13 @@ func newTemplate() *Templates {
 }
 
 func main() {
+
+	var sudokuBoard = [9][9]int{}
+
+	initializeBoard(&sudokuBoard, 30)
+
 	e := echo.New()
+
 	e.Use(middleware.Logger())
 
 	e.Renderer = newTemplate()
