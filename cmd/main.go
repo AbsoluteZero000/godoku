@@ -19,14 +19,21 @@ func initializeBoard(sudokuBoard *[9][9]int, K int) {
 		}
 	}
 
+	printBoard(sudokuBoard)
+	fmt.Println()
 	fillDiagonals(sudokuBoard)
+	printBoard(sudokuBoard)
+	fmt.Println()
 	fillRemaining(sudokuBoard, 0, 3)
+	printBoard(sudokuBoard)
+	fmt.Println()
 	removeKDigits(sudokuBoard, K)
+	printBoard(sudokuBoard)
 }
 
 func fillDiagonals(sudokuBoard *[9][9]int) {
-	for i := 0; i < 0; i += 3 {
-		fillBox(sudokuBoard, i, i)
+	for i := 0; i < 3; i += 1 {
+		fillBox(sudokuBoard, i*3, i*3)
 	}
 }
 
@@ -134,6 +141,15 @@ func removeKDigits(sudokuBoard *[9][9]int, K int) {
 	}
 }
 
+func printBoard(sudokuBoard *[9][9]int) {
+	for i := 0; i < 9; i++ {
+		for j := 0; j < 9; j++ {
+			fmt.Printf("%d ", sudokuBoard[i][j])
+		}
+		fmt.Printf("\n")
+	}
+}
+
 type Templates struct {
 	templates *template.Template
 }
@@ -149,9 +165,10 @@ func newTemplate() *Templates {
 }
 
 func main() {
+
 	var sudokuBoard = [9][9]int{}
 
-	initializeBoard(&sudokuBoard, 30)
+	initializeBoard(&sudokuBoard, 3)
 
 	e := echo.New()
 
@@ -173,6 +190,9 @@ func main() {
 		if row >= 0 && row < 9 && col >= 0 && col < 9 {
 			if value >= 0 && value <= 9 {
 				sudokuBoard[row][col] = value
+				if checkIfSafe(&sudokuBoard, row, col, value) {
+					return c.Render(http.StatusBadRequest, "board.html", sudokuBoard)
+				}
 			}
 		}
 
