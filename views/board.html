@@ -3,8 +3,14 @@
     <tr class="sudoku-row">
         {{range $colIndex, $cell := $row}}
         <td class="sudoku-cell">
-            <input type="number" min="1" max="9" value="{{if ne $cell 0}}{{$cell}}{{end}}" hx-post="/update"
-                hx-vals='{"row": {{$rowIndex}}, "col": {{$colIndex}}, "value": this.value}' hx-trigger="change">
+            <input type="number" min="1" max="9" value="{{if ne $cell 0}}{{$cell}}{{end}}"
+                hx-post="/update"
+                hx-trigger="change"
+                hx-include="this"
+                name="value"
+                data-row="{{$rowIndex}}"
+                data-col="{{$colIndex}}"
+                hx-vals='{"row": {{$rowIndex}}, "col": {{$colIndex}}}'>
         </td>
         {{end}}
     </tr>

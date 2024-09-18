@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"io"
 	"math/rand"
@@ -148,7 +149,6 @@ func newTemplate() *Templates {
 }
 
 func main() {
-
 	var sudokuBoard = [9][9]int{}
 
 	initializeBoard(&sudokuBoard, 30)
@@ -167,11 +167,15 @@ func main() {
 		row, _ := strconv.Atoi(c.FormValue("row"))
 		col, _ := strconv.Atoi(c.FormValue("col"))
 		value, _ := strconv.Atoi(c.FormValue("value"))
+
+		fmt.Println(row, col, value)
+
 		if row >= 0 && row < 9 && col >= 0 && col < 9 {
 			if value >= 0 && value <= 9 {
 				sudokuBoard[row][col] = value
 			}
 		}
+
 		return c.Render(http.StatusOK, "board.html", sudokuBoard)
 	})
 
