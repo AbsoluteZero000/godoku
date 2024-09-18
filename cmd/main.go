@@ -19,16 +19,11 @@ func initializeBoard(sudokuBoard *[9][9]int, K int) {
 		}
 	}
 
-	printBoard(sudokuBoard)
-	fmt.Println()
 	fillDiagonals(sudokuBoard)
-	printBoard(sudokuBoard)
-	fmt.Println()
+
 	fillRemaining(sudokuBoard, 0, 3)
-	printBoard(sudokuBoard)
-	fmt.Println()
+
 	removeKDigits(sudokuBoard, K)
-	printBoard(sudokuBoard)
 }
 
 func fillDiagonals(sudokuBoard *[9][9]int) {
@@ -168,7 +163,7 @@ func main() {
 
 	var sudokuBoard = [9][9]int{}
 
-	initializeBoard(&sudokuBoard, 3)
+	initializeBoard(&sudokuBoard, 30)
 
 	e := echo.New()
 
