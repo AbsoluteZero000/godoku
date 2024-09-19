@@ -160,15 +160,10 @@ func newTemplate() *Templates {
 }
 
 func main() {
-
 	var sudokuBoard = [9][9]int{}
-
 	initializeBoard(&sudokuBoard, 30)
-
 	e := echo.New()
-
 	e.Use(middleware.Logger())
-
 	e.Renderer = newTemplate()
 
 	e.GET("/", func(c echo.Context) error {
@@ -179,19 +174,19 @@ func main() {
 		row, _ := strconv.Atoi(c.FormValue("row"))
 		col, _ := strconv.Atoi(c.FormValue("col"))
 		value, _ := strconv.Atoi(c.FormValue("value"))
-
 		fmt.Println(row, col, value)
 
 		if row >= 0 && row < 9 && col >= 0 && col < 9 {
 			if value >= 0 && value <= 9 {
-				sudokuBoard[row][col] = value
-				if checkIfSafe(&sudokuBoard, row, col, value) {
+				if value == 0 || checkIfSafe(&sudokuBoard, row, col, value) {
+					sudokuBoard[row][col] = value
+					return c.Render(http.StatusOK, "board.html", sudokuBoard)
+				} else {
 					return c.Render(http.StatusBadRequest, "board.html", sudokuBoard)
 				}
 			}
 		}
-
-		return c.Render(http.StatusOK, "board.html", sudokuBoard)
+		return c.Render(http.StatusBadRequest, "board.html", sudokuBoard)
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))
