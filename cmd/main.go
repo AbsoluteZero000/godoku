@@ -136,6 +136,17 @@ func removeKDigits(sudokuBoard *[9][9]int, K int) {
 	}
 }
 
+func checkIfWon(sudokuBoard *[9][9]int) bool {
+	for i := 0; i < 9; i++ {
+		for j := 0; j < 9; j++ {
+			if sudokuBoard[i][j] == 0 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func printBoard(sudokuBoard *[9][9]int) {
 	for i := 0; i < 9; i++ {
 		for j := 0; j < 9; j++ {
@@ -159,34 +170,53 @@ func newTemplate() *Templates {
 	}
 }
 
+type FormData struct {
+	SudokuBoard [9][9]int
+	Error       string
+}
+
+func newFormData(k int) FormData {
+	data := FormData{
+		SudokuBoard: [9][9]int{},
+		Error:       "",
+	}
+	initializeBoard(&data.SudokuBoard, k)
+	return data
+}
+
 func main() {
-	var sudokuBoard = [9][9]int{}
-	initializeBoard(&sudokuBoard, 30)
+	formData := newFormData(30)
+
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Renderer = newTemplate()
 
 	e.GET("/", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "index.html", sudokuBoard)
+		return c.Render(http.StatusOK, "index.html", formData)
 	})
 
 	e.POST("/update", func(c echo.Context) error {
 		row, _ := strconv.Atoi(c.FormValue("row"))
 		col, _ := strconv.Atoi(c.FormValue("col"))
 		value, _ := strconv.Atoi(c.FormValue("value"))
-		fmt.Println(row, col, value)
+		formData.Error = ""
 
 		if row >= 0 && row < 9 && col >= 0 && col < 9 {
 			if value >= 0 && value <= 9 {
-				if value == 0 || checkIfSafe(&sudokuBoard, row, col, value) {
-					sudokuBoard[row][col] = value
-					return c.Render(http.StatusOK, "board.html", sudokuBoard)
+				if value == 0 || checkIfSafe(&formData.SudokuBoard, row, col, value) {
+					formData.SudokuBoard[row][col] = value
+					if checkIfWon(&formData.SudokuBoard) {
+						return c.Render(http.StatusOK, "won.html", formData)
+					}
+					return c.Render(http.StatusOK, "game.html", formData)
 				} else {
-					return c.Render(http.StatusBadRequest, "board.html", sudokuBoard)
+					formData.Error = "Invalid input"
+					return c.Render(http.StatusBadRequest, "game.html", formData)
 				}
 			}
 		}
-		return c.Render(http.StatusBadRequest, "board.html", sudokuBoard)
+		formData.Error = "Invalid input"
+		return c.Render(http.StatusBadRequest, "game.html", formData)
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))

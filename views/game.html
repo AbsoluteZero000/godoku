@@ -1,0 +1,8 @@
+<div id="board-container">
+    {{ template "board.html" .SudokuBoard}}
+</div>
+<div id="error-container" class="error">
+    {{ if .Error }}
+    {{ .Error }}
+    {{ end }}
+</div>

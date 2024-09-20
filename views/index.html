@@ -52,13 +52,18 @@
         .sudoku-row:nth-child(3n) td {
             border-bottom: 2px solid #333;
         }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
 <body>
     <h1>Sudoku Game</h1>
-    <div id="board-container" hx-target="this" hx-swap="outerHTML">
-        {{template "board.html" .}}
+    <div id="game-container" hx-target="this" hx-swap="innerHTML">
+        {{template "game.html" .}}
     </div>
 </body>
 
