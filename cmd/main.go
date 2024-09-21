@@ -185,7 +185,7 @@ func newFormData(k int) FormData {
 }
 
 func main() {
-	formData := newFormData(30)
+	formData := newFormData(10)
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -206,7 +206,7 @@ func main() {
 				if value == 0 || checkIfSafe(&formData.SudokuBoard, row, col, value) {
 					formData.SudokuBoard[row][col] = value
 					if checkIfWon(&formData.SudokuBoard) {
-						return c.Render(http.StatusOK, "won.html", formData)
+						return c.Render(http.StatusOK, "win.html", nil)
 					}
 					return c.Render(http.StatusOK, "game.html", formData)
 				} else {
